@@ -3,14 +3,14 @@ import { db } from "../database/database.connection.js";
 export async function searchGames(req, res) {
   try {
     const games = await db.query("SELECT * FROM games");
-    res.send(games);
+    res.send(games.rows);
   } catch (error) {
     res.status(500).send(error.message);
   }
 }
 
 export async function addGames(req, res) {
-  const { name, image, stockTotal, pricePerDay } = req.body;
+  const { name, image, stockTotal, pricePerDay } = res.locals;
 
   try {
     await db.query(
