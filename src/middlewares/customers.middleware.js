@@ -19,7 +19,7 @@ export async function addCustomersValidation(req, res, next) {
           return res.status(400).send(errorsMessage);
         }
   
-      const checkCPF = await db.query(`SELECT * customers WHERE cpf=$1)`,[cpf])
+      const checkCPF = await db.query(`SELECT * FROM customers WHERE cpf=$1;`,[cpf])
   
       if(checkCPF.rowCount !== 0) return res.status(409).send("CPF already exists")
   
