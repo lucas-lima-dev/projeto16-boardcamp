@@ -19,28 +19,6 @@ export async function searchRentals(req, res) {
   }
 }
 
-export async function searchRentalsById(req, res) {
-  const { id } = req.params;
-
-  try {
-    const rentals = await db.query(`
-    SELECT rentals.*,
-    json_build_object('id',customer.id,'name',customer.name) AS customer,
-    json_build_object('id',games.id,'name',games.name) AS game,
-    FROM rentals
-    JOIN customers
-      ON rentals."customerId" = customer.id
-    JOIN games
-      ON rentals."gameId" = games.id
-    WHERE id = $1;`,
-      [id]
-    );
-    res.send(rentals.rows[0]);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-}
-
 export async function addRentals(req, res) {
   const {
     customerId,
@@ -83,18 +61,40 @@ export async function addRentals(req, res) {
 }
 
 export async function finishRentals(req, res) {
-  const { name, phone, cpf, birthday, id } = req.body;
+  const { 
+    customerId,
+    gameId, 
+    daysRented,
+    rentDate,
+    returnDate,
+    originalPrice,
+    delayFee,
+    id 
+  } = res.locals.finishRentals;
 
   try {
     await db.query(
-      `
-          UPDATE rentals 
-          SET name=$1, phone=$2,cpf=$3,birthday=$4 
-          WHERE id=$5`,
-      [name, phone, cpf, birthday, id]
+      `UPDATE rentals
+        SET
+         "customerId" = $1,
+         "gameId" = $2,
+         "daysRented" = $3,
+         "rentDate" = $4,
+         "returnDate" = $5,
+         "originalPrice" = $6,
+         "delayFee" = $7
+        WHERE "id" = $8;`,
+         [customerId,
+          gameId,
+          daysRented, 
+          rentDate, 
+          returnDate, 
+          originalPrice,
+          delayFee,
+          id]
     );
 
-    res.status(200);
+    res.sendStatus(200);
   } catch (error) {
     res.status(500).send(error.message);
   }
