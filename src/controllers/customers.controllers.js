@@ -26,7 +26,7 @@ export async function searchCustomersById(req, res) {
 }
 
 export async function addCustomers(req, res) {
-  const { name, phone, cpf, birthday } = req.body;
+  const { name, phone, cpf, birthday } = req.locals;
 
   try {
     await db.query(
@@ -43,7 +43,7 @@ export async function addCustomers(req, res) {
 }
 
 export async function updateCustomers(req, res) {
-  const { name, phone, cpf, birthday, id } = req.body;
+  const { name, phone, cpf, birthday, id } = req.locals;
 
   try {
     await db.query(
