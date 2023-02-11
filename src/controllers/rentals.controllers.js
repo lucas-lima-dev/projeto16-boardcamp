@@ -2,8 +2,18 @@ import { db } from "../database/database.connection.js";
 
 export async function searchRentals(req, res) {
   try {
-    const rentals = await db.query("SELECT * FROM rentals");
-    res.send(rentals);
+    const rentals = await db.query(`
+    SELECT 
+     rentals.*,
+     json_build_object('id',customers.id,'name',customers.name) AS customer,
+     json_build_object('id',games.id,'name',games.name) AS game
+    FROM 
+     rentals
+     JOIN customers
+      ON rentals."customerId" = customers.id
+     JOIN games
+      ON rentals."gameId" = games.id;`);
+    res.send(rentals.rows);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -13,13 +23,19 @@ export async function searchRentalsById(req, res) {
   const { id } = req.params;
 
   try {
-    const rentals = await db.query(
-      `
-        SELECT * FROM rentals
-        WHERE rentals.id = $1`,
+    const rentals = await db.query(`
+    SELECT rentals.*,
+    json_build_object('id',customer.id,'name',customer.name) AS customer,
+    json_build_object('id',games.id,'name',games.name) AS game,
+    FROM rentals
+    JOIN customers
+      ON rentals."customerId" = customer.id
+    JOIN games
+      ON rentals."gameId" = games.id
+    WHERE id = $1;`,
       [id]
     );
-    res.send(rentals);
+    res.send(rentals.rows[0]);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -34,13 +50,21 @@ export async function addRentals(req, res) {
     returnDate,
     originalPrice,
     delayFee,
-  } = req.locals;
+  } = res.locals.newRentals;
 
   try {
     await db.query(
       `
-        INSERT INTO rentals (customerId, gameId,rentDate,daysRented,returnDate,originalPrice,delayFee) 
-        VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        INSERT INTO rentals (
+          "customerId",
+          "gameId",
+          "rentDate",
+          "daysRented",
+          "returnDate",
+          "originalPrice",
+          "delayFee"
+        ) 
+        VALUES ($1,$2,$3,$4,$5,$6,$7);`,
       [
         customerId,
         gameId,
@@ -48,17 +72,17 @@ export async function addRentals(req, res) {
         daysRented,
         returnDate,
         originalPrice,
-        delayFee,
+        delayFee
       ]
     );
 
-    res.status(201);
+    res.sendStatus(201);
   } catch (error) {
     res.status(500).send(error.message);
   }
 }
 
-export async function updateRentals(req, res) {
+export async function finishRentals(req, res) {
   const { name, phone, cpf, birthday, id } = req.body;
 
   try {
@@ -77,17 +101,17 @@ export async function updateRentals(req, res) {
 }
 
 export async function deleteRentals(req, res) {
-  const { id } = req.params;
+  const { id } = res.locals.id;
 
   try {
     await db.query(
       `
             DELETE FROM rentals  
-            WHERE id=$1`,
+            WHERE id=$1;`,
       [id]
     );
 
-    res.status(200).send("sem dados");
+    res.status(200).send("Rental delete sucessfully");
   } catch (error) {
     res.status(500).send(error.message);
   }
