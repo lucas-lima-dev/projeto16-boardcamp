@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { addRentals, deleteRentals, searchRentals } from "../controllers/rentals.controllers";
-import { addRentalsValidation } from "../middlewares/rentals.middleware";
+import { addRentals, deleteRentals, searchRentals } from "../controllers/rentals.controllers.js";
+import { addRentalsValidation } from "../middlewares/rentals.middleware.js";
 
 const rentalsRouter = Router();
 

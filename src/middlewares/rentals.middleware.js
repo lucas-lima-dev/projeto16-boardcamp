@@ -1,5 +1,5 @@
-import { db } from "../database/database.connection";
-import { addRentalsSchema } from "../schemas/rentals.schema";
+import { db } from "../database/database.connection.js";
+import { addRentalsSchema } from "../schemas/rentals.schema.js";
 
 export async function addRentalsValidation(req, res, next) {
   const { customerId, gameId, daysRented } = req.body;
