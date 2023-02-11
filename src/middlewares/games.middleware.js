@@ -18,7 +18,7 @@ export async function addGamesValidation(req, res, next) {
         return res.status(400).send(errorsMessage);
       }
 
-    const checkName = await db.query(`SELECT * games WHERE name=$1)`,[name])
+    const checkName = await db.query(`SELECT * FROM games WHERE name=$1;`,[name]);
 
     if(checkName.rowCount !== 0) return res.status(409).send("Name already exists")
 
