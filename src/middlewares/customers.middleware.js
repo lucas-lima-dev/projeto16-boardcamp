@@ -28,7 +28,7 @@ export async function addCustomersValidation(req, res, next) {
       next()
   }
 
-  export async function updateCustomersValidation(req, res, next) {
+export async function updateCustomersValidation(req, res, next) {
     const { name, phone, cpf, birthday } = req.body;
     const {id} = req.params
   

@@ -26,18 +26,30 @@ export async function searchRentalsById(req, res) {
 }
 
 export async function addRentals(req, res) {
-  const { customerId,gameId,daysRented} = req.body;
-  const rentDate = Date.now()
-  const returnDate = null
-  const originalPrice = 4500;
-  const delayFee = null;
+  const {
+    customerId,
+    gameId,
+    daysRented,
+    rentDate,
+    returnDate,
+    originalPrice,
+    delayFee,
+  } = req.locals;
 
   try {
     await db.query(
       `
         INSERT INTO rentals (customerId, gameId,rentDate,daysRented,returnDate,originalPrice,delayFee) 
         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [customerId, gameId, rentDate, daysRented,returnDate,originalPrice,delayFee]
+      [
+        customerId,
+        gameId,
+        rentDate,
+        daysRented,
+        returnDate,
+        originalPrice,
+        delayFee,
+      ]
     );
 
     res.status(201);
@@ -65,18 +77,18 @@ export async function updateRentals(req, res) {
 }
 
 export async function deleteRentals(req, res) {
-    const { id } = req.params;
-  
-    try {
-      await db.query(
-        `
+  const { id } = req.params;
+
+  try {
+    await db.query(
+      `
             DELETE FROM rentals  
             WHERE id=$1`,
-        [id]
-      );
-  
-      res.status(200).send("sem dados");
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
+      [id]
+    );
+
+    res.status(200).send("sem dados");
+  } catch (error) {
+    res.status(500).send(error.message);
   }
+}
