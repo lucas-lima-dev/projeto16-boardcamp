@@ -70,13 +70,14 @@ export async function addRentalsValidation(req, res, next) {
 export async function finishRentalsValidation(req, res, next) {
   const { id } = req.params;
   const returnDateRaw = Date.now();
-  const todayReturnDate = dayjs(returnDateRaw).format("YYYY-MM-DD");
+  const returnDate = dayjs(returnDateRaw).format("YYYY-MM-DD");
 
   const data = await db.query(`SELECT * FROM rentals WHERE id=$1;`, [id]);
-
-  if (!data) return res.status(404).send("Id number not found");
-
+  
   const rent = data.rows[0];
+
+  if (!rent) return res.status(404).send("Id number not found");
+
 
   const {
     rentDate,
@@ -84,10 +85,10 @@ export async function finishRentalsValidation(req, res, next) {
     originalPrice,
     customerId,
     gameId,
-    returnDate,
+    
   } = rent;
 
-  if (returnDate === null && rent) {
+  if (!rent.returnDate && rent) {
     const delayDays = (returnDateRaw - rentDate) / 60 / 60 / 24 / 1000;
     const delayDaysToPay = Math.floor(delayDays) - daysRented;
 
@@ -112,11 +113,12 @@ export async function finishRentalsValidation(req, res, next) {
 export async function deleteRentalsValidation(req, res, next) {
   const { id } = req.params;
 
-  const data = await db.query(`SELECT * FROM rentals WHERE id=$1;`, [id]);
-
-  if (!data) return res.status(404).send("Id number not found");
-
+  const data = await db.query(`SELECT * FROM rentals WHERE "id" = $1;`, [id]);
+  
   const rental = data.rows[0];
+
+  if (!rental) return res.status(404).send("Id number not found");
+
 
   if (rental && rental.returnDate) {
     res.locals.id = id;

@@ -107,7 +107,7 @@ export async function deleteRentals(req, res) {
     await db.query(
       `
             DELETE FROM rentals  
-            WHERE id=$1;`,
+            WHERE "id"=$1;`,
       [id]
     );
 
