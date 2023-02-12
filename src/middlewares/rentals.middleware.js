@@ -73,20 +73,12 @@ export async function finishRentalsValidation(req, res, next) {
   const returnDate = dayjs(returnDateRaw).format("YYYY-MM-DD");
 
   const data = await db.query(`SELECT * FROM rentals WHERE id=$1;`, [id]);
-  
+
   const rent = data.rows[0];
 
   if (!rent) return res.status(404).send("Id number not found");
 
-
-  const {
-    rentDate,
-    daysRented,
-    originalPrice,
-    customerId,
-    gameId,
-    
-  } = rent;
+  const { rentDate, daysRented, originalPrice, customerId, gameId } = rent;
 
   if (!rent.returnDate && rent) {
     const delayDays = (returnDateRaw - rentDate) / 60 / 60 / 24 / 1000;
@@ -112,15 +104,16 @@ export async function finishRentalsValidation(req, res, next) {
 
 export async function deleteRentalsValidation(req, res, next) {
   const { id } = req.params;
+  
 
   const data = await db.query(`SELECT * FROM rentals WHERE "id" = $1;`, [id]);
-  
+
   const rental = data.rows[0];
 
   if (!rental) return res.status(404).send("Id number not found");
 
-
   if (rental && rental.returnDate) {
+    
     res.locals.id = id;
   } else return res.status(400).send("This rental was not returned yet");
 

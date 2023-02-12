@@ -101,7 +101,8 @@ export async function finishRentals(req, res) {
 }
 
 export async function deleteRentals(req, res) {
-  const { id } = res.locals.id;
+  const  id  = res.locals.id;
+  
 
   try {
     await db.query(
